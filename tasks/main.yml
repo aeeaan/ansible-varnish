@@ -5,11 +5,16 @@
     - varnish
     - packages
 
+- name: configure varnish systemd settings
+  template: src="varnish.params.j2" dest="/etc/varnish/varnish.params"
+  when: ansible_distribution_major_version|int > 6
+  notify: restart varnish
+  tags:
+    - varnish
+    - configuration
+
 - name: configure varnish
-  template: src="{{ item }}.j2" dest="/etc/varnish/{{ item }}"
-  with_items:
-    - varnish.params
-    - default.vcl
+  template: src="default.vcl.j2" dest="/etc/varnish/default.vcl"
   notify: restart varnish
   tags:
     - varnish
