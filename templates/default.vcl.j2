@@ -39,3 +39,17 @@ sub vcl_deliver {
     #
     # You can do accounting or modifying the final object here.
 }
+
+sub vcl_hash {
+    hash_data(req.url);
+    if (req.http.host) {
+        hash_data(req.http.host);
+    } else {
+        hash_data(server.ip);
+    }
+    # Keep a different version for SSL
+    if (req.http.X-Forwarded-Proto ~ "https") {
+        hash_data(req.http.X-Forwarded-Proto);
+    }
+    return (lookup);
+}
