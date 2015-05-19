@@ -11,7 +11,14 @@ Any pre-requisites that may not be covered by Ansible itself or the role should 
 Role Variables
 --------------
 
-A description of the settable variables for this role should go here, including any variables that are in defaults/main.yml, vars/main.yml, and any variables that can/should be set via parameters to the role. Any variables that are read from other roles and/or the global scope (ie. hostvars, group vars, etc.) should be mentioned here as well.
+| Variable                              | Default                       | Notes				|
+| :---                                  | :---                          | :---				|
+| varnish_listen_address		| ''				| '' binds to all		|
+| varnish_listen_port			| 6081				|    	      			|
+| varnish_admin_listen_address		| 127.0.0.1			|				|
+| varnish_admin_listen_port		| 6082				|				|
+| varnish_backend_host			| 127.0.0.1			|				|
+| varnish_backend_port			| 80				|				|
 
 Dependencies
 ------------
