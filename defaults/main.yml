@@ -1,4 +1,5 @@
 ---
+varnish_upstream_repo: false
 varnish_listen_address: ''
 varnish_listen_port: 6081
 

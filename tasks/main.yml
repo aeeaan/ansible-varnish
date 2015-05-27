@@ -1,4 +1,12 @@
 ---
+- name: configure varnish repo
+  include: repos.yml
+  when: varnish_upstream_repo
+  tags:
+    - varnish
+    - packages
+    - repos
+
 - name: install varnish
   yum: name=varnish state=installed
   tags:

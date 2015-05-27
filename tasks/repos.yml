@@ -1,0 +1,14 @@
+---
+- name: install varnish repo key
+  rpm_key: key=https://repo.varnish-cache.org/GPG-key.txt state=present
+  tags:
+    - varnish
+    - repos
+    - packages
+
+- name: install varnish repo
+  template: src=varnish.repo.j2 dest=/etc/yum.repos.d/varnish.repo owner=root group=root mode=0644
+  tags:
+    - varnish
+    - repos
+    - packages

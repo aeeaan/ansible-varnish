@@ -13,6 +13,7 @@ Role Variables
 
 | Variable                              | Default                       | Notes				|
 | :---                                  | :---                          | :---				|
+| varnish_upstream_repo			| false				| use false (epel) for centos 7	|
 | varnish_listen_address		| ''				| '' binds to all		|
 | varnish_listen_port			| 6081				|    	      			|
 | varnish_admin_listen_address		| 127.0.0.1			|				|
