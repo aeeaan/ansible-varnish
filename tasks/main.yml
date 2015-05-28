@@ -34,3 +34,12 @@
     - varnish
     - configuration
     - services
+
+- name: configure firewalld for varnish
+  firewalld: zone=public port="{{ varnish_listen_port }}/tcp" permanent=true state=enabled
+  notify: reload firewall
+  when: varnish_open_port and ansible_distribution_major_version|int > 6
+  tags:
+    - varnish
+    - firewall
+    - configuration
