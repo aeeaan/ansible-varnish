@@ -24,6 +24,11 @@ sub vcl_recv {
     #
     # Typically you clean up the request here, removing cookies you don't need,
     # rewriting the request, etc.
+    # return(pass); first to short circuit caching
+    
+    {% if varnish_disable_caching %}
+    return(pass);
+    {% endif %}
 }
 
 sub vcl_backend_response {

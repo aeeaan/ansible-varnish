@@ -3,6 +3,7 @@ varnish_upstream_repo: false
 varnish_listen_address: ''
 varnish_listen_port: 6081
 varnish_open_port: false
+varnish_disable_caching: false
 
 varnish_admin_listen_address: 127.0.0.1
 varnish_admin_listen_port: 6082
