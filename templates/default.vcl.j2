@@ -31,6 +31,10 @@ sub vcl_recv {
     {% endif %}
 }
 
+{% for item in varnish_vcl_includes %}
+include "vcl/{{ item }}";
+{% endfor %}
+
 sub vcl_backend_response {
     # Happens after we have read the response headers from the backend.
     #

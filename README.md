@@ -21,6 +21,7 @@ Role Variables
 | varnish_admin_listen_port		| 6082				|				|
 | varnish_backend_host			| 127.0.0.1			|				|
 | varnish_backend_port			| 80				|				|
+| varnish_vcl_includes			| []				| List of vcl files to include, dummy files are created when they don't exist to makes sure varnish can start |
 
 Dependencies
 ------------

@@ -21,6 +21,19 @@
     - varnish
     - configuration
 
+- name: make sure vcl include dir exists
+  file: path=/etc/varnish/vcl owner=root group=root mode=0755 state=directory
+  tags:
+    - varnish
+    - configuration
+
+- name: create dummy include files
+  copy: content="#" dest="/etc/varnish/vcl/{{ item }}" owner=root group=root mode=0644 force=no
+  with_items: varnish_vcl_includes
+  tags:
+    - varnish
+    - configuration
+
 - name: configure varnish
   template: src="default.vcl.j2" dest="/etc/varnish/default.vcl"
   notify: restart varnish
