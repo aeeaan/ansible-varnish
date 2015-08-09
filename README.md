@@ -1,12 +1,7 @@
-Role Name
+correcthorse.varnish
 =========
 
-A brief description of the role goes here.
-
-Requirements
-------------
-
-Any pre-requisites that may not be covered by Ansible itself or the role should be mentioned here. For instance, if the role uses the EC2 module, it may be a good idea to mention in this section that the boto package is required.
+A role for installing varnish cache. It doesn't do anything fancy with VCL, it is expected that you will use varnish_vcl_includes to include some custom vcl files that you manage in your master playbook.
 
 Role Variables
 --------------
@@ -26,16 +21,14 @@ Role Variables
 Dependencies
 ------------
 
-A list of other roles hosted on Galaxy should go here, plus any details in regards to parameters that may need to be set for other roles, or variables that are used from other roles.
+- correcthorse.common
 
 Example Playbook
 ----------------
 
-Including an example of how to use your role (for instance, with variables passed in as parameters) is always nice for users too:
-
     - hosts: servers
       roles:
-         - { role: username.rolename, x: 42 }
+         - { role: correcthorse.varnish }
 
 License
 -------
