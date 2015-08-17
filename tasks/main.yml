@@ -48,6 +48,22 @@
     - configuration
     - services
 
+- name: ensure varnishlog is enabled
+  service: name=varnishlog enabled=yes state=started
+  when: varnish_log_enable == true
+
+- name: ensure varnishlog is disabled
+  service: name=varnishlog enabled=no state=stopped
+  when: varnish_log_enable == false
+
+- name: ensure varnishncsa is enabled
+  service: name=varnishncsa enabled=yes state=started
+  when: varnish_ncsa_enable == true
+
+- name: ensure varnishncsa is disabled
+  service: name=varnishncsa enabled=no state=stopped
+  when: varnish_ncsa_enable == false
+
 - name: configure firewalld for varnish
   firewalld: zone=public port="{{ varnish_listen_port }}/tcp" permanent=true state=enabled
   notify: reload firewall

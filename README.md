@@ -17,6 +17,11 @@ Role Variables
 | varnish_backend_host			| 127.0.0.1			|				|
 | varnish_backend_port			| 80				|				|
 | varnish_vcl_includes			| []				| List of vcl files to include, dummy files are created when they don't exist to makes sure varnish can start |
+| varnish_logrotate_period		| weekly			| daily, weekly, monthly	|
+| varnish_logrotate_keep		| 5				| number of rotations to keep  	|
+| varnish_logrotate_compress		| false				| compress logs if true	 	|
+| varnish_log_enable			| false				| enable/disable standard varnish log process|
+| varnish_ncsa_enable			| false				| enable/disable apache style log process |
 
 Dependencies
 ------------

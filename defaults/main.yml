@@ -12,3 +12,10 @@ varnish_backend_host: 127.0.0.1
 varnish_backend_port: 80
 
 varnish_vcl_includes: []
+
+#logrotate settings
+varnish_logrotate_period: weekly
+varnish_logrotate_keep: 5
+varnish_logrotate_compress: false
+varnish_log_enable: false
+varnish_ncsa_enable: false
