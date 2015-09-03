@@ -25,10 +25,19 @@ sub vcl_recv {
     # Typically you clean up the request here, removing cookies you don't need,
     # rewriting the request, etc.
     # return(pass); first to short circuit caching
-    
+
+    if (req.restarts == 0) {
+      if (req.http.X-Forwarded-For) { # set or append the client.ip to X-Forwarded-For header
+        set req.http.X-Forwarded-For = req.http.X-Forwarded-For + ", " + client.ip;
+      } else {
+        set req.http.X-Forwarded-For = client.ip;
+      }
+    }
+
     {% if varnish_disable_caching %}
     return(pass);
     {% endif %}
+
 }
 
 sub vcl_hash {
