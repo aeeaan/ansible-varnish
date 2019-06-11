@@ -1,5 +1,21 @@
-[varnish-4.0]
-name=Varnish 4.0 for Enterprise Linux
-baseurl=https://repo.varnish-cache.org/redhat/varnish-4.0/el{{ ansible_distribution_major_version }}/$basearch
+[varnishcache_varnish60lts]
+name=varnishcache_varnish60lts
+baseurl=https://packagecloud.io/varnishcache/varnish60lts/el/{{ ansible_distribution_major_version }}/$basearch
+repo_gpgcheck=1
+gpgcheck=0
 enabled=1
-gpgcheck=1
+gpgkey=https://packagecloud.io/varnishcache/varnish60lts/gpgkey
+sslverify=1
+sslcacert=/etc/pki/tls/certs/ca-bundle.crt
+metadata_expire=300
+
+[varnishcache_varnish60lts-source]
+name=varnishcache_varnish60lts-source
+baseurl=https://packagecloud.io/varnishcache/varnish60lts/el/{{ ansible_distribution_major_version }}/SRPMS
+repo_gpgcheck=1
+gpgcheck=0
+enabled=0
+gpgkey=https://packagecloud.io/varnishcache/varnish60lts/gpgkey
+sslverify=1
+sslcacert=/etc/pki/tls/certs/ca-bundle.crt
+metadata_expire=300

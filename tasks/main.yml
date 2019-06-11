@@ -1,78 +1,107 @@
 ---
 - name: configure varnish repo
   include: repos.yml
-  when: varnish_upstream_repo
+  when: varnish_upstream_repo|bool
   tags:
     - varnish
     - packages
     - repos
 
 - name: install varnish
-  yum: name=varnish state=present
+  yum:
+    name: varnish
+    state: present
   tags:
     - varnish
     - packages
 
 - name: configure varnish systemd settings
-  template: src="varnish.params.j2" dest="/etc/varnish/varnish.params"
-  when: ansible_distribution_major_version|int > 6
+  template: src="varnish.params.epel.j2" dest="/etc/varnish/varnish.params"
+  when: ansible_distribution_major_version|int > 6 and not varnish_upstream_repo|bool
   notify: restart varnish
-  tags:
-    - varnish
-    - configuration
-
-- name: make sure vcl include dir exists
-  file: path=/etc/varnish/vcl owner=root group=root mode=0755 state=directory
-  tags:
-    - varnish
-    - configuration
-
-- name: create dummy include files
-  copy: content="#" dest="/etc/varnish/vcl/{{ item }}" owner=root group=root mode=0644 force=no
-  with_items: varnish_vcl_includes
   tags:
     - varnish
     - configuration
 
 - name: configure varnish
   template: src="default.vcl.j2" dest="/etc/varnish/default.vcl"
+  when: varnish_upstream_repo|bool
+  notify: restart varnish
+  tags:
+    - varnish
+    - configuration
+
+- name: add certbot varnish passthrough
+  template: src="certbot.vcl.j2" dest="/etc/varnish/certbot.vcl"
+  when: varnish_vcl_certbot|bool
+  notify: restart varnish
+  tags:
+    - varnish
+    - configuration
+
+- name: configure EPEL varnish
+  template: src="default.vcl.epel.j2" dest="/etc/varnish/default.vcl"
+  when: not varnish_upstream_repo|bool
   notify: restart varnish
   tags:
     - varnish
     - configuration
 
 - name: ensure varnish is enabled
-  service: name=varnish enabled=yes state=started
+  service:
+    name: varnish
+    enabled: yes
+    state: started
   tags:
     - varnish
     - configuration
     - services
 
-- name: configure logrotate for varnish
-  template: src=logrotate.j2 dest=/etc/logrotate.d/varnish owner=root group=root mode=0644
-  tags:
-    - varnish
-    - configuration
-    - logrotate
+- name: ensure varnish override dir exists
+  file:
+    path: /etc/systemd/system/varnish.service.d
+    state: directory
+    owner: root
+    group: root
+    mode: 0755
 
-- name: ensure varnishlog is enabled
-  service: name=varnishlog enabled=yes state=started
-  when: varnish_log_enable == true
-  tags:
-    - varnish
-    - configuration
-    - services
+- name: varnish startup override
+  template:
+    src: varnish.service.j2
+    dest: /etc/systemd/system/varnish.service.d/override.conf
+    owner: root
+    group: root
+    mode: 0664
+  notify: reload systemd
 
-- name: ensure varnishlog is disabled
-  service: name=varnishlog enabled=no state=stopped
-  when: varnish_log_enable == false
-  tags:
-    - varnish
-    - configuration
-    - services
+#- name: configure logrotate for varnish
+#  template: src=logrotate.j2 dest=/etc/logrotate.d/varnish owner=root group=root mode=0644
+#  tags:
+#    - varnish
+#    - configuration
+#    - logrotate
+
+#- name: ensure varnishlog is enabled
+#  service: name=varnishlog enabled=yes state=started
+#  when: varnish_log_enable == true
+#  tags:
+#    - varnish
+#    - configuration
+#    - services
+
+#- name: ensure varnishlog is disabled
+#  service: name=varnishlog enabled=no state=stopped
+#  when: varnish_log_enable == false
+#  tags:
+#   - varnish
+#   - configuration
+#   - services
 
 - name: ensure varnishncsa is enabled
-  service: name=varnishncsa enabled=yes state=started
+  service:
+    name: varnishncsa
+    enabled: yes
+    state: started
   when: varnish_ncsa_enable == true
   tags:
     - varnish
@@ -80,7 +109,10 @@
     - services
 
 - name: ensure varnishncsa is disabled
-  service: name=varnishncsa enabled=no state=stopped
+  service:
+    name: varnishncsa
+    enabled: no
+    state: stopped
   when: varnish_ncsa_enable == false
   tags:
     - varnish
@@ -88,7 +120,11 @@
     - services
 
 - name: configure firewalld for varnish
-  firewalld: zone=public port="{{ varnish_listen_port }}/tcp" permanent=true state=enabled
+  firewalld:
+    zone: public
+    port: "{{ varnish_listen_port }}/tcp"
+    permanent: true
+    state: enabled
   notify: reload firewall
   when: varnish_open_port and ansible_distribution_major_version|int > 6
   tags:

@@ -7,11 +7,16 @@
 # return statement.
 #
 # See the VCL chapters in the Users Guide at https://www.varnish-cache.org/docs/
-# and http://varnish-cache.org/trac/wiki/VCLExamples for more examples.
+# and https://www.varnish-cache.org/trac/wiki/VCLExamples for more examples.
 
 # Marker to tell the VCL compiler that this VCL has been adapted to the
 # new 4.0 format.
 vcl 4.0;
+import std;
+
+{% if varnish_vcl_certbot is defined and varnish_vcl_certbot %}
+include "/etc/varnish/certbot.vcl";
+{% endif %}
 
 # Default backend definition. Set this to point to your content server.
 backend default {
@@ -24,26 +29,36 @@ sub vcl_recv {
     #
     # Typically you clean up the request here, removing cookies you don't need,
     # rewriting the request, etc.
-    # return(pass); first to short circuit caching
-
-    if (req.restarts == 0) {
-      if (req.http.X-Forwarded-For) { # set or append the client.ip to X-Forwarded-For header
-        set req.http.X-Forwarded-For = req.http.X-Forwarded-For + ", " + client.ip;
-      } else {
-        set req.http.X-Forwarded-For = client.ip;
-      }
+ 
+    # set x-forwarded-proto header to https if connections comes from Hitch SSL Proxy.
+    if (std.port(local.ip) == 6086) {
+        set req.http.X-Forwarded-Proto = "https";
     }
+}
 
-    {% if varnish_disable_caching %}
-    return(pass);
+sub vcl_backend_response {
+    # Happens after we have read the response headers from the backend.
+    #
+    # Here you clean the response headers, removing silly Set-Cookie headers
+    # and other mistakes your backend does.
+}
+
+sub vcl_deliver {
+    # Happens when we have all the pieces we need, and are about to send the
+    # response to the client.
+    #
+    # You can do accounting or modifying the final object here.
+    {% if varnish_https_strict_header %}
+    set resp.http.Strict-Transport-Security = "{{ varnish_https_strict_header }}";
     {% endif %}
-
 }
 
 sub vcl_hash {
-    # Keep a different version for SSL
-    if (req.http.X-Forwarded-Proto ~ "https") {
-        hash_data(req.http.X-Forwarded-Proto);
+    # Cache https seperately
+    if (std.port(local.ip) != 80) {
+        if (req.http.X-Forwarded-Proto) {
+            hash_data(req.http.X-Forwarded-Proto);
+        }
     }
 }
 

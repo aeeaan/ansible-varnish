@@ -1,14 +1,28 @@
 ---
 - name: install varnish repo key
-  rpm_key: key=https://repo.varnish-cache.org/GPG-key.txt state=present
+  rpm_key:
+    key: https://packagecloud.io/varnishcache/varnish60lts/gpgkey
+    state: present
   tags:
     - varnish
     - repos
     - packages
 
 - name: install varnish repo
-  template: src=varnish.repo.j2 dest=/etc/yum.repos.d/varnish.repo owner=root group=root mode=0644
+  template: 
+    src: varnish.repo.j2
+    dest: /etc/yum.repos.d/varnish.repo 
+    owner: root
+    group: root
+    mode: 0644
+  register: varnish_repo_added
   tags:
     - varnish
     - repos
     - packages
+
+- name: varnish yum make cache
+  command: yum -q makecache -y
+  when: varnish_repo_added is changed
+  args:
+    warn: false
